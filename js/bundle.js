@@ -178,6 +178,14 @@ $( document ).ready(function() {
       var cat = (category.key == 'Population & Socio-economic Indicators') ? 'Population & Socio-economy' : category.key;
       $('.category-list' + rowCount + ' ul').append("<li>" + cat + " <div><i class='humanitarianicons-" + icons[index] + "'></i></div></li>");
     });
+
+    var svg = d3.select('.category-list'+rowCount)
+      .append('svg')
+      .attr('class', 'total-line')
+      .append('line')
+        .attr('stroke-width', 1)
+        .attr('x1', 0)
+        .attr('x2', 241);
   }
 
 
@@ -229,6 +237,14 @@ $( document ).ready(function() {
         }
       }
     });
+
+    var svg = d3.select('.'+chartName)
+      .append('svg')
+      .attr('class', 'total-line')
+      .append('line')
+        .attr('stroke-width', 1)
+        .attr('x1', 0)
+        .attr('x2', 241);
   }
 
 

@@ -1204,8 +1204,18 @@ ul.actions {
       background-color: #E6E7E8;
       margin-left: 6px; }
 
+.total-line {
+  bottom: 51px;
+  left: -15px;
+  height: 1px;
+  overflow: visible;
+  position: absolute; }
+  .total-line line {
+    stroke: #f26b61 !important; }
+
 .categories {
   margin-top: 60px;
+  position: relative;
   text-align: right; }
   .categories ul li {
     padding-bottom: 6px; }
@@ -1215,6 +1225,8 @@ ul.actions {
       width: 20px; }
       .categories ul li > div i {
         font-size: 16px; }
+  .categories .total-line {
+    left: 0; }
 
 .country-chart svg {
   overflow: visible !important; }
@@ -1226,6 +1238,7 @@ ul.actions {
   font-size: 11px;
   line-height: 13px;
   margin-bottom: 15px;
+  max-height: 40px;
   text-transform: uppercase; }
   .country-chart .chart-header img {
     border-radius: 50%;
