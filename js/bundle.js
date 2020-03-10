@@ -24,6 +24,16 @@ $( document ).ready(function() {
   var metricNames = {data1: 'Complete', data2: 'Incomplete', data3: 'No data'}
   var countryNames, datasetCounts = [];
 
+  var tooltipActive = false;
+  $(document).mousemove(function(event) {
+    if (tooltipActive) {
+      $('.tooltip').css({
+        left: event.pageX - $('.tooltip').width()/2 - 14, 
+        top: event.pageY - $('.tooltip').height() - 5
+      });
+    }
+  });
+
   function getData() {
     Promise.all([
       d3.csv(DATA),
@@ -199,6 +209,16 @@ $( document ).ready(function() {
         columns: chartData,
         names: metricNames,
         type: 'bar',
+        onmouseover: function (d) {
+          tooltipActive = true;
+          $('.tooltip')
+            .html(d.value + '% ' + d.name.toLowerCase())
+            .css({opacity: 1});
+        },
+        onmouseout: function (d) {
+          tooltipActive = false;
+          $('.tooltip').css({opacity: 0})
+        },
         labels: {
           format: function (v) {
             if (v>0)
@@ -224,18 +244,20 @@ $( document ).ready(function() {
             values: [0, 50, 100],
             outer: false
           },
-          padding: {bottom: 0, top: 0}
+          padding: { bottom: 0, top: 0 }
         }
       },
       legend: {
         show: false
       },
-      tooltip: {
-        grouped: false,
-        contents: function (d) {
-          return '<div class="tooltip-custom">' + d[0].value + '% ' + (d[0].name).toLowerCase() +'</div>';
-        }
-      }
+      tooltip: {show: false}
+      // tooltip: {
+      //   grouped: false,
+      //   contents: function (d) {
+      //     //console.log($('.tooltip-custom').position());
+      //     return '<div class="tooltip-custom">' + d[0].value + '% ' + (d[0].name).toLowerCase() +'</div>';
+      //   }
+      // }
     });
 
     var svg = d3.select('.'+chartName)
@@ -246,7 +268,6 @@ $( document ).ready(function() {
         .attr('x1', 0)
         .attr('x2', 241);
   }
-
 
 
   function getCountryName(iso3) {

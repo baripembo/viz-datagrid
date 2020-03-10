@@ -1214,17 +1214,19 @@ ul.actions {
     stroke: #f26b61 !important; }
 
 .categories {
-  margin-top: 60px;
-  position: relative;
-  text-align: right; }
+  margin-top: 68px;
+  position: relative; }
   .categories ul li {
-    padding-bottom: 6px; }
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 5px; }
     .categories ul li > div {
       display: inline-block;
       text-align: center;
       width: 20px; }
       .categories ul li > div i {
-        font-size: 16px; }
+        font-size: 16px;
+        margin-left: 8px; }
   .categories .total-line {
     left: 0; }
 
@@ -1256,8 +1258,9 @@ ul.actions {
   color: #FFF;
   font-size: 11px;
   line-height: 28px;
+  opacity: 0;
   padding: 0 15px;
-  transform: translateY(-52px); }
+  position: absolute; }
   .tooltip-custom:after {
     border-color: rgba(0, 0, 0, 0);
     border: solid transparent;
