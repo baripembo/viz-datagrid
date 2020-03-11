@@ -12,13 +12,15 @@ function compare(a, b) {
   return comparison;
 }
 $( document ).ready(function() {
-  const DATA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-/pub?gid=1103779481&single=true&output=csv';
-  const DATA_DATA_COUNTS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-/pub?gid=733089483&single=true&output=csv';
-  const DATA_COUNTRY_NAMES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-/pub?gid=735983640&single=true&output=csv';
-  
+  const DATA_PATH = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-/pub?single=true&output=csv&gid=';
+  const DATA_ID = 1103779481;
+  const DATASET_COUNTS_ID = 733089483;
+  const GLOBAL_COUNTS_ID = 2045883069;
+  const COUNTRIES_ID = 735983640;
 
   var isMobile = $(window).width()<600? true : false;
-  var countryCount, categoryCount, rowCount = 0;
+  var countryCount, categoryCount, globalCounts;
+  var rowCount = 0;
   var date;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
   var metricNames = {data1: 'Complete', data2: 'Incomplete', data3: 'No data'}
@@ -36,11 +38,13 @@ $( document ).ready(function() {
 
   function getData() {
     Promise.all([
-      d3.csv(DATA),
-      d3.csv(DATA_DATA_COUNTS),
-      d3.csv(DATA_COUNTRY_NAMES)
+      d3.csv(DATA_PATH + DATA_ID),
+      d3.csv(DATA_PATH + DATASET_COUNTS_ID),
+      d3.csv(DATA_PATH + GLOBAL_COUNTS_ID),
+      d3.csv(DATA_PATH + COUNTRIES_ID)
     ]).then(function(data){
-      countryNames = data[2];
+      countryNames = data[3];
+      globalCounts = data[2][0];
       datasetCounts = data[1];
       parseData(data[0]);
     });
@@ -169,13 +173,13 @@ $( document ).ready(function() {
 
 
     createKeyFigure('Number of Locations', countryCount);
-    createKeyFigure('Number of Categories', categoryCount);
-    createKeyFigure('Number of Sub-categories', 0);
+    createKeyFigure('Number of Categories', globalCounts['Category Count']);
+    createKeyFigure('Number of Sub-categories', globalCounts['Subcategory Count']);
   }
 
 
   function createKeyFigure(title, value) {
-    return $('.overview').append("<div class='key-figure col-3'><h3>"+ title +"</h3><div class='num'>"+ value +"</div><p class='date small'>"+ date +"</p></div></div>");
+    return $('.stats').append("<div class='key-figure'><div class='inner'><h3>"+ title +"</h3><div class='num'>"+ value +"</div><p class='date small'>"+ date +"</p></div></div></div>");
   }
 
 
@@ -189,6 +193,7 @@ $( document ).ready(function() {
       $('.category-list' + rowCount + ' ul').append("<li>" + cat + " <div><i class='humanitarianicons-" + icons[index] + "'></i></div></li>");
     });
 
+    //divider
     var svg = d3.select('.category-list'+rowCount)
       .append('svg')
       .attr('class', 'total-line')
@@ -213,11 +218,11 @@ $( document ).ready(function() {
           tooltipActive = true;
           $('.tooltip')
             .html(d.value + '% ' + d.name.toLowerCase())
-            .css({opacity: 1});
+            .css({display: 'block'});
         },
         onmouseout: function (d) {
           tooltipActive = false;
-          $('.tooltip').css({opacity: 0})
+          $('.tooltip').css({display: 'none'})
         },
         labels: {
           format: function (v) {
@@ -232,7 +237,9 @@ $( document ).ready(function() {
         order: null
       },
       bar: {
-        width: 15
+        width: {
+          ratio: 0.7
+        }
       },
       axis: {
         rotated: true,
@@ -250,14 +257,7 @@ $( document ).ready(function() {
       legend: {
         show: false
       },
-      tooltip: {show: false}
-      // tooltip: {
-      //   grouped: false,
-      //   contents: function (d) {
-      //     //console.log($('.tooltip-custom').position());
-      //     return '<div class="tooltip-custom">' + d[0].value + '% ' + (d[0].name).toLowerCase() +'</div>';
-      //   }
-      // }
+      tooltip: { show: false }
     });
 
     var svg = d3.select('.'+chartName)
@@ -276,7 +276,7 @@ $( document ).ready(function() {
   }
 
   function getDatasetCount(iso3) {
-    const result = datasetCounts.filter(country => country['Country'] == iso3);
+    const result = datasetCounts.filter(country => country['ISO3'] == iso3);
     return result[0]['Unique Dataset Count'];
   }
 

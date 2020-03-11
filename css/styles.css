@@ -38,6 +38,7 @@
   .col-3,
   .col-4,
   .col-6,
+  .col-7,
   .col-8,
   .col-10 {
     grid-column: 1 / -1; } }
@@ -1121,7 +1122,7 @@ h2 {
   font-size: 16px;
   font-weight: normal;
   line-height: 41px;
-  padding-left: 22px; }
+  padding-left: 20px; }
 
 h3 {
   font-family: 'Gotham-Bold', sans-serif;
@@ -1173,20 +1174,32 @@ ul.actions {
   font-family: 'Gotham-Light', sans-serif;
   font-size: 52px;
   line-height: 52px;
-  margin-left: -4px;
   padding: 10px 0; }
   .num span {
     font-size: 26px; }
 
 .date {
-  color: #888; }
+  color: #888;
+  padding-bottom: 20px; }
 
-.overview {
+.stats {
   margin-bottom: 20px; }
 
+.overview-container {
+  display: flex;
+  flex-flow: row; }
+  .overview-container .donut-chart {
+    margin-top: 30px;
+    width: 25%; }
+  .overview-container .stats {
+    display: flex;
+    flex-wrap: wrap; }
+
 .key-figure {
-  border-bottom: 1px solid #CCC;
-  padding-bottom: 15px; }
+  padding: 0 14px 5px;
+  width: 33%; }
+  .key-figure .inner {
+    border-bottom: 1px solid #CCC; }
 
 .legend {
   display: flex;
@@ -1256,9 +1269,9 @@ ul.actions {
   background-color: #000;
   border-radius: 3px;
   color: #FFF;
+  display: none;
   font-size: 11px;
   line-height: 28px;
-  opacity: 0;
   padding: 0 15px;
   position: absolute; }
   .tooltip-custom:after {
@@ -1315,8 +1328,21 @@ ul.actions {
   font-size: 12px; }
 
 @media only screen and (max-width: 767px) {
-  .logos .grid-container > div {
-    padding: 0;
-    text-align: center; }
-  .logos img {
-    margin: 10px; } }
+  main {
+    padding: 0 20px; }
+  h2 {
+    font-size: 13px;
+    padding-left: 15px; }
+  .categories ul li > div {
+    display: none; }
+  .overview-container {
+    flex-flow: column; }
+    .overview-container .donut-chart {
+      width: 100%; }
+    .overview-container .stats {
+      margin-top: 40px; }
+    .overview-container .key-figure {
+      width: 50%; }
+      .overview-container .key-figure h3 {
+        line-height: 16px;
+        height: 32px; } }
