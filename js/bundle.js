@@ -46,6 +46,10 @@ $( document ).ready(function() {
       globalCounts = data[2][0];
       datasetCounts = data[1];
       parseData(data[0]);
+
+      //remove loader and show vis
+      $('.loader').hide();
+      $('main, footer').css('opacity', 1);
     });
   }
 
