@@ -126,8 +126,11 @@ $( document ).ready(function() {
     });
 
     createOverview(totals);
+
+    //select events for mobile country dropdown
     $('.country-select').change(onCountrySelect);
 
+    //click event for country charts
     $('.country-chart').click(function(event) {
       var country = $(event.currentTarget).attr('data-country');
       var url = 'https://data.humdata.org/group/' + country.toLowerCase();
