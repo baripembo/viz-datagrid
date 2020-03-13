@@ -1121,12 +1121,12 @@ h2 {
   font-family: 'Gotham-Bold', sans-serif;
   font-size: 16px;
   font-weight: normal;
-  line-height: 41px;
+  line-height: 49px;
   padding-left: 20px; }
 
 h3 {
   font-family: 'Gotham-Bold', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 21px;
   font-weight: normal; }
 
@@ -1174,6 +1174,7 @@ ul.actions {
   font-family: 'Gotham-Light', sans-serif;
   font-size: 52px;
   line-height: 52px;
+  min-height: 81px;
   padding: 10px 0; }
   .num span {
     font-size: 26px; }
@@ -1183,14 +1184,14 @@ ul.actions {
   padding-bottom: 20px; }
 
 .stats {
-  margin-bottom: 20px; }
+  margin: 5px 0 20px; }
 
 .overview-container {
   display: flex;
   flex-flow: row; }
   .overview-container .donut-chart {
     margin-top: 30px;
-    width: 25%; }
+    width: 30%; }
   .overview-container .stats {
     display: flex;
     flex-wrap: wrap; }
@@ -1250,8 +1251,8 @@ ul.actions {
   align-items: center;
   display: flex;
   font-family: 'Gotham-Bold', sans-serif;
-  font-size: 11px;
-  line-height: 13px;
+  font-size: 12px;
+  line-height: 14px;
   margin-bottom: 15px;
   max-height: 40px;
   text-transform: uppercase; }
@@ -1288,6 +1289,19 @@ ul.actions {
     top: 100%;
     width: 0; }
 
+.mobile-select {
+  display: none;
+  margin-bottom: 10px;
+  width: 50%; }
+  .mobile-select label {
+    color: #888;
+    margin-bottom: 5px; }
+  .mobile-select select {
+    background-color: #FFF;
+    border: 1px solid #CCC;
+    border-radius: 5px;
+    padding: 5px; }
+
 .c3-xgrid-focus {
   display: none; }
 
@@ -1302,6 +1316,7 @@ ul.actions {
     stroke: #929497; }
 
 .c3-chart-text text {
+  font-size: 12px;
   transform: translateX(-8px);
   text-anchor: end; }
 
@@ -1325,16 +1340,38 @@ ul.actions {
 
 .donut-legend-title {
   font-family: 'Gotham-Bold', sans-serif;
-  font-size: 12px; }
+  font-size: 14px;
+  transform: translate(-15px, 0); }
 
 @media only screen and (max-width: 767px) {
   main {
-    padding: 0 20px; }
+    padding: 0 10px; }
   h2 {
     font-size: 13px;
     padding-left: 15px; }
-  .categories ul li > div {
-    display: none; }
+  .mobile-select {
+    display: block; }
+    .mobile-select select {
+      margin: 5px 0 15px; }
+  .legend {
+    justify-content: flex-start; }
+  .country-chart {
+    display: none;
+    overflow: hidden; }
+    .country-chart .chart-header {
+      height: 48px;
+      max-height: 48px; }
+    .country-chart.show {
+      display: block; }
+  .categories {
+    display: none;
+    margin-top: 75px; }
+    .categories.category-list1 {
+      display: block; }
+    .categories ul li {
+      padding-bottom: 9px; }
+      .categories ul li > div {
+        display: none; }
   .overview-container {
     flex-flow: column; }
     .overview-container .donut-chart {

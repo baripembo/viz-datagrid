@@ -18,10 +18,9 @@ $( document ).ready(function() {
   const GLOBAL_COUNTS_ID = 2045883069;
   const COUNTRIES_ID = 735983640;
 
-  var isMobile = $(window).width()<600? true : false;
-  var countryCount, categoryCount, globalCounts;
+  var isMobile = $(window).width()<768 ? true : false;
+  var countryCount, categoryCount, globalCounts, date;
   var rowCount = 0;
-  var date;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
   var metricNames = {data1: 'Complete', data2: 'Incomplete', data3: 'No data'}
   var countryNames, datasetCounts = [];
@@ -96,7 +95,9 @@ $( document ).ready(function() {
       chartName = country.key + "Chart";
       var countryName = getCountryName(country.key);
       var datasetCount = getDatasetCount(country.key);
-      $('.charts').append("<div class='col-2 country-chart'><div class='chart-header'><img src='assets/flags/" + country.key + ".png'/><div>" + countryName + "<span>" + datasetCount + " datasets</span></div></div><div class='chart " + chartName + "'></div></div>");
+      var colspan = (isMobile) ? 'col-1' : 'col-2';
+      var status = (country.key == 'AFG') ? 'show' : '';
+      $('.charts').append("<div class='" + colspan + " country-chart " + country.key + " " + status + "' data-country='" + country.key + "'><div class='chart-header'><img src='assets/flags/" + country.key + ".png'/><div>" + countryName + "<span>" + datasetCount + " datasets</span></div></div><div class='chart " + chartName + "'></div></div>");
       
       //metric 
       country.values.forEach(function(metric, index) {
@@ -113,11 +114,35 @@ $( document ).ready(function() {
         chartData.push(values);
       });
       createBarChart(chartName, chartData);
+
+      //build country dropdown
+      $('.country-select').append(
+        $('<option></option>').val(country.key).html(countryName)
+      );
     });
 
     createOverview(totals);
+    $('.country-select').change(onCountrySelect);
+
+    $('.country-chart').click(function(event) {
+      var country = $(event.currentTarget).attr('data-country');
+      var url = 'https://data.humdata.org/group/' + country.toLowerCase();
+      window.open(url, '_blank');
+    });
   }
 
+
+  function onCountrySelect() {
+    $('.country-chart').removeClass('show');
+    var target = '.country-chart.' + $('.country-select').val();
+    // console.log($(target).find('.chart'))
+    // var t = $(target).find('.chart');
+    // console.log(t)
+    // t.resize();
+    // chart.flush();
+    // console.log(chart)
+    $(target).addClass('show');
+  }
 
   function createOverview(totals) {
     //donut chart
@@ -185,8 +210,9 @@ $( document ).ready(function() {
 
   function createCategories(categories) {
     rowCount++;
+    var colspan = (isMobile) ? 'col-1' : 'col-2';
     var icons = ['Affected-population', 'Coordination', 'Food-Security', 'Location', 'Health', 'People-in-need'];
-    $('.charts').append("<div class='col-2 categories category-list" + rowCount + "'><ul class='small'></ul></div>");
+    $('.charts').append("<div class='" + colspan + " categories category-list" + rowCount + "'><ul class='small'></ul></div>");
 
     categories.forEach(function(category, index) {
       var cat = (category.key == 'Population & Socio-economic Indicators') ? 'Population & Socio-economy' : category.key;
@@ -203,7 +229,7 @@ $( document ).ready(function() {
         .attr('x2', 241);
   }
 
-
+  
   function createBarChart(chartName, chartData) {
     var chart = c3.generate({
       size: {
@@ -237,9 +263,7 @@ $( document ).ready(function() {
         order: null
       },
       bar: {
-        width: {
-          ratio: 0.7
-        }
+        width: 18
       },
       axis: {
         rotated: true,
@@ -260,6 +284,7 @@ $( document ).ready(function() {
       tooltip: { show: false }
     });
 
+    //divider line
     var svg = d3.select('.'+chartName)
       .append('svg')
       .attr('class', 'total-line')
