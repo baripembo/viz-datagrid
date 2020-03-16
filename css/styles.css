@@ -29,7 +29,7 @@
 .col-10 {
   grid-column: span 10; }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 768px) {
   .grid-container {
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: 10px;
@@ -1383,7 +1383,7 @@ ul.actions {
   font-size: 14px;
   transform: translate(-15px, 0); }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 768px) {
   main {
     padding: 0 10px; }
   h2 {

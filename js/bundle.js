@@ -18,7 +18,7 @@ $( document ).ready(function() {
   const GLOBAL_COUNTS_ID = 2045883069;
   const COUNTRIES_ID = 735983640;
 
-  var isMobile = $(window).width()<768 ? true : false;
+  var isMobile = $(window).width()<=768 ? true : false;
   var countryCount, categoryCount, globalCounts, date;
   var rowCount = 0;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
@@ -142,14 +142,13 @@ $( document ).ready(function() {
   function onCountrySelect() {
     $('.country-chart').removeClass('show');
     var target = '.country-chart.' + $('.country-select').val();
-    // console.log($(target).find('.chart'))
-    // var t = $(target).find('.chart');
-    // console.log(t)
-    // t.resize();
-    // chart.flush();
-    // console.log(chart)
+    var w = $('.country-chart').width();
+    var h = $('.country-chart .chart').css('max-height').split('px')[0];
+    var chart = ref[$('.country-select').val()+'Chart'];
+    chart.resize({width: w, height: h});
     $(target).addClass('show');
   }
+
 
   function createOverview(totals) {
     //donut chart
@@ -236,7 +235,7 @@ $( document ).ready(function() {
         .attr('x2', 241);
   }
 
-  
+  var ref = {};
   function createBarChart(chartName, chartData) {
     var chart = c3.generate({
       size: {
@@ -290,6 +289,8 @@ $( document ).ready(function() {
       },
       tooltip: { show: false }
     });
+
+    ref[chartName] = chart;
 
     //divider line
     var svg = d3.select('.'+chartName)
