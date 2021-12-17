@@ -52,7 +52,7 @@ $( document ).ready(function() {
       $('main, footer').css('opacity', 1);
 
       //load the subcategory view
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
+      $('.subcategory-container a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
     });
   }
 
