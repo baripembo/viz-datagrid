@@ -108,7 +108,7 @@ $( document ).ready(function() {
       var colspan = (isMobile) ? 'col-1' : 'col-2';
       var status = (index == 0) ? 'show' : '';
       var flagURL = 'assets/flags/' + countryCode + '.png';
-      var indicatorArray = ['Percentage Data Complete','Percentage Data Incomplete','Percentage Unavailable'];
+      var indicatorArray = ['Percentage Data Complete','Percentage Data Incomplete','Percentage No Data'];
 
       $('.charts').append("<div class='" + colspan + " country-chart " + countryCode + " " + status + "' data-country='" + countryCode + "'><div class='chart-header'><img class='flag' src='" + flagURL + "' /><div>" + country.key + "<span>" + datasetCount + " datasets</span></div></div><div class='chart " + chartName + "'></div></div>");
       
