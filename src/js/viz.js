@@ -60,10 +60,7 @@ $( document ).ready(function() {
       .key(function(d){ return d['Category']; })
       .entries(data);
     categoryCount = groupByCategory.length;
-    groupByCategory.sort(compare);
-    console.log("-----------");
-    console.log(groupByCategory.reverse());
-    console.log(compare);
+    // groupByCategory.sort(compare);
     groupByCategory.push({key:'TOTAL'});
 
     //group the data by country
@@ -109,7 +106,7 @@ $( document ).ready(function() {
 
       //metric 
       country.values.forEach(function(metric, index) {
-        metric.values.sort(compare);
+        // metric.values.sort(compare);
         var values = ['data'+(index+1)];
         //category
         metric.values.forEach(function(category) {
