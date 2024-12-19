@@ -45,7 +45,7 @@ $( document ).ready(function() {
 
       //load the subcategory view
       // $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
-      // $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrids-subcategories"></iframe>'); 
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrids-subcategories"></iframe>'); 
     });
   }
 
