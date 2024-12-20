@@ -28,6 +28,8 @@ $( document ).ready(function() {
       d3.csv(DATA_PATH + GLOBAL_COUNTS_ID)
     ]).then(function(data){
       globalCounts = data[2][0];
+
+      console.log('globalCounts',globalCounts)
       datasetCounts = data[1];
 
       countryNames = datasetCounts.map(row => ({
@@ -44,8 +46,7 @@ $( document ).ready(function() {
       deepLinkView();
 
       //load the subcategory view
-      // $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrids-subcategories"></iframe>'); 
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>');
     });
   }
 
@@ -151,11 +152,7 @@ $( document ).ready(function() {
 
 
   function createOverview() {
-    var totals = new Object();
-    //donut chart
-    totals['Available'] = Math.round(globalCounts['Total Percentage Data Complete']*100);
-    totals['Not Up-to-date'] = Math.round(globalCounts['Total Percentage Data Incomplete']*100);
-    totals['Empty'] = Math.round(globalCounts['Total Percentage No Data']*100);
+    var totals = getGlobalTotals();
     var metricTotals = Object.entries(totals);
 
     var chart = c3.generate({
@@ -209,6 +206,37 @@ $( document ).ready(function() {
     createKeyFigure('Number of Sub-categories', globalCounts['Subcategory Count']);
   }
 
+  
+  function getGlobalTotals() {
+    let totals = new Object();
+
+    // Convert percentages to whole numbers
+    let complete = Math.round(globalCounts['Total Percentage Data Complete'] * 100);
+    let incomplete = Math.round(globalCounts['Total Percentage Data Incomplete'] * 100);
+    let noData = Math.round(globalCounts['Total Percentage No Data'] * 100);
+
+    // Ensure the sum of the percentages equals 100
+    let totalSum = complete + incomplete + noData;
+    if (totalSum !== 100) {
+        let adjustment = 100 - totalSum;
+
+        // Adjust the largest value
+        if (complete >= incomplete && complete >= noData) {
+            complete += adjustment;
+        } else if (incomplete >= complete && incomplete >= noData) {
+            incomplete += adjustment;
+        } else {
+            noData += adjustment;
+        }
+    }
+
+    totals['Available'] = complete;
+    totals['Not Up-to-date'] = incomplete;
+    totals['Empty'] = noData;
+
+    return totals;
+  }
+
 
   function createKeyFigure(title, value) {
     return $('.stats').append("<div class='key-figure'><div class='inner'><h3>"+ title +"</h3><div class='num'>"+ value +"</div><p class='date small'>"+ date +"</p></div></div></div>");
@@ -259,8 +287,10 @@ $( document ).ready(function() {
         },
         labels: {
           format: function (v) {
-            if (v>0)
+            if (v>10)
               return v + '%';
+            else
+              return null;
           }
         },
         colors: metricColors,
