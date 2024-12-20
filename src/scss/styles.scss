@@ -1,6 +1,6 @@
-@import '_grid';
-@import '_fonts';
-@import '_loader';
+@use 'grid';
+@use 'fonts';
+@use 'loader';
 
 * {
 	box-sizing: border-box;

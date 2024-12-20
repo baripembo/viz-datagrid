@@ -1,16 +1,14 @@
 $( document ).ready(function() {
-  //const DATA_PATH = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-/pub?single=true&output=csv&gid=';
-  const DATA_PATH = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTnZMN1guJCB44f-O6iP-JpNum4NJdL5Op5GEbrkAayk_V19UkmO56YzQ2vSsfVCVWl5eyOT-Yhh4Y-%2Fpub%3Foutput%3Dcsv%26gid%3D'
+  const DATA_PATH = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRguxePjzXGhVXDTL6-JuS5Vppx7fKnk-CBheunS_5RGDKV36tOfLHa5RZ94oO2pDCLcdNC8BBisJzT/pub?single=true&output=csv&gid=';
   const DATA_ID = 1103779481;
   const DATASET_COUNTS_ID = 733089483;
   const GLOBAL_COUNTS_ID = 2045883069;
-  const COUNTRIES_ID = 735983640;
 
   var isMobile = $(window).width()<=768 ? true : false;
   var countryCount, categoryCount, globalCounts, date;
   var rowCount = 0;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
-  var metricNames = {data1: 'Complete', data2: 'Incomplete', data3: 'No data'}
+  var metricNames = {data1: 'Available', data2: 'Not Up-to-date', data3: 'Unavailable'}
   var countryNames, datasetCounts = [];
 
   var tooltipActive = false;
@@ -27,12 +25,16 @@ $( document ).ready(function() {
     Promise.all([
       d3.csv(DATA_PATH + DATA_ID),
       d3.csv(DATA_PATH + DATASET_COUNTS_ID),
-      d3.csv(DATA_PATH + GLOBAL_COUNTS_ID),
-      d3.csv(DATA_PATH + COUNTRIES_ID)
+      d3.csv(DATA_PATH + GLOBAL_COUNTS_ID)
     ]).then(function(data){
-      countryNames = data[3];
       globalCounts = data[2][0];
       datasetCounts = data[1];
+
+      countryNames = datasetCounts.map(row => ({
+        "ISO-alpha3 code": row.ISO3,
+        "M49 Country or Area": row.Location
+      }));
+
       parseData(data[0]);
 
       //remove loader and show vis
@@ -42,7 +44,8 @@ $( document ).ready(function() {
       deepLinkView();
 
       //load the subcategory view
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
+      // $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrids-subcategories"></iframe>'); 
     });
   }
 
@@ -57,7 +60,7 @@ $( document ).ready(function() {
       .key(function(d){ return d['Category']; })
       .entries(data);
     categoryCount = groupByCategory.length;
-    groupByCategory.sort(compare);
+    // groupByCategory.sort(compare);
     groupByCategory.push({key:'TOTAL'});
 
     //group the data by country
@@ -103,7 +106,7 @@ $( document ).ready(function() {
 
       //metric 
       country.values.forEach(function(metric, index) {
-        metric.values.sort(compare);
+        // metric.values.sort(compare);
         var values = ['data'+(index+1)];
         //category
         metric.values.forEach(function(category) {
@@ -150,8 +153,8 @@ $( document ).ready(function() {
   function createOverview() {
     var totals = new Object();
     //donut chart
-    totals['Complete'] = Math.round(globalCounts['Total Percentage Data Complete']*100);
-    totals['Incomplete'] = Math.round(globalCounts['Total Percentage Data Incomplete']*100);
+    totals['Available'] = Math.round(globalCounts['Total Percentage Data Complete']*100);
+    totals['Not Up-to-date'] = Math.round(globalCounts['Total Percentage Data Incomplete']*100);
     totals['Empty'] = Math.round(globalCounts['Total Percentage No Data']*100);
     var metricTotals = Object.entries(totals);
 
@@ -162,8 +165,8 @@ $( document ).ready(function() {
       bindto: '.donut-chart',
       data: {
         columns: [
-            ['data1', totals['Complete']],
-            ['data2', totals['Incomplete']],
+            ['data1', totals['Available']],
+            ['data2', totals['Not Up-to-date']],
             ['data3', totals['Empty']]
         ],
         type: 'donut',
@@ -188,14 +191,14 @@ $( document ).ready(function() {
     legendContainer
       .attr('class', 'donut-legend-container')
       .append('text')
-      .text('Global Data Grid Completeness:')
+      .text('Global Data Grid Availability:')
       .attr('class', 'donut-legend-title')
       .attr('x', legendX - 10)
       .attr('y', legendY - 20);
 
     //key figures
     metricTotals.forEach(function(metric, index) {
-      var title = (metric[0] == 'Empty') ? 'Total Percentage No Data' : 'Total Percentage Data ' + metric[0];
+      var title = (metric[0] == 'Empty') ? 'Total Percentage Unavailable' : 'Total Percentage ' + metric[0];
       var value = metric[1] + '<span>%</span>';
       createKeyFigure(title, value);
     });
@@ -215,7 +218,7 @@ $( document ).ready(function() {
   function createCategories(categories) {
     rowCount++;
     var colspan = (isMobile) ? 'col-1' : 'col-2';
-    var icons = ['Affected-population', 'Coordination', 'Food-Security', 'Location', 'Health', 'People-in-need'];
+    var icons = ['Affected-population', 'Drought', 'Coordination', 'Food-Security', 'Location', 'Health'];
     $('.charts').append("<div class='" + colspan + " categories category-list" + rowCount + "'><ul class='small'></ul></div>");
 
     categories.forEach(function(category, index) {
