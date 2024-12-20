@@ -45,7 +45,7 @@ $( document ).ready(function() {
 
       //load the subcategory view
       // $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>'); 
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://baripembo.github.io/viz-datagrid-subcategories"></iframe>'); 
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrids-subcategories"></iframe>'); 
     });
   }
 
@@ -60,7 +60,7 @@ $( document ).ready(function() {
       .key(function(d){ return d['Category']; })
       .entries(data);
     categoryCount = groupByCategory.length;
-    groupByCategory.sort(compare);
+    // groupByCategory.sort(compare);
     groupByCategory.push({key:'TOTAL'});
 
     //group the data by country
@@ -106,7 +106,7 @@ $( document ).ready(function() {
 
       //metric 
       country.values.forEach(function(metric, index) {
-        metric.values.sort(compare);
+        // metric.values.sort(compare);
         var values = ['data'+(index+1)];
         //category
         metric.values.forEach(function(category) {
