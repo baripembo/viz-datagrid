@@ -1608,6 +1608,7 @@ ul.actions li.social a i {
 .overview-container {
   display: flex;
   flex-flow: row;
+  position: relative;
 }
 .overview-container .donut-chart {
   margin-top: 30px;
@@ -1616,6 +1617,49 @@ ul.actions li.social a i {
 .overview-container .stats {
   display: flex;
   flex-wrap: wrap;
+}
+.overview-container text {
+  pointer-events: none;
+}
+.overview-container .chart-container,
+.overview-container .tooltip {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 30px;
+}
+.overview-container .bar {
+  cursor: pointer;
+}
+.overview-container .group-border {
+  fill: none;
+  stroke: #007CE1;
+  stroke-width: 1;
+}
+.overview-container .tooltip {
+  background-color: #FFF;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  display: none;
+  font-family: "Source Sans 3", sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 18px;
+  padding: 8px 12px;
+  position: absolute;
+  pointer-events: none;
+}
+.overview-container .tooltip text {
+  pointer-events: none;
+}
+.overview-container .tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #FFF transparent transparent transparent;
 }
 
 .key-figure {

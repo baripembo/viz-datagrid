@@ -12,6 +12,7 @@ function compare(a, b) {
   return comparison;
 }
 $( document ).ready(function() {
+  //https://docs.google.com/spreadsheets/d/1k5Kt7apd4MwcYJWKpRxT4S9KjSkmamQXaiN3orwnl_A/edit?gid=1103779481#gid=1103779481
   const DATA_PATH = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRguxePjzXGhVXDTL6-JuS5Vppx7fKnk-CBheunS_5RGDKV36tOfLHa5RZ94oO2pDCLcdNC8BBisJzT/pub?single=true&output=csv&gid=';
   const DATA_ID = 1103779481;
   const DATASET_COUNTS_ID = 733089483;
@@ -41,8 +42,6 @@ $( document ).ready(function() {
       d3.csv(DATA_PATH + GLOBAL_COUNTS_ID)
     ]).then(function(data){
       globalCounts = data[2][0];
-
-      console.log('globalCounts',globalCounts)
       datasetCounts = data[1];
 
       countryNames = datasetCounts.map(row => ({
@@ -163,48 +162,165 @@ $( document ).ready(function() {
     $(target).addClass('show');
   }
 
+  function createStackBarChart() {
+    var totals = getGlobalTotals();
+    const data = [
+      { segment: "Available", value: totals['Available'], parent: "Available", barColor: "#007CE1", labelColor:"#FFF" },
+      { segment: "Not up-to-date", value: totals['Not Up-to-date'], parent: "Available", barColor: "#C0D7EB", labelColor: "#2d78bd"  },
+      { segment: "Unavailable", value: totals['Empty'], parent: "Unavailable", barColor: "#E6E7E8", labelColor: "#F26B7E"  }
+    ];
+
+    const width = 350;
+    const height = 50;
+    const barHeight = 40;
+
+    const svg = d3.select("#chart")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    const x = d3.scaleLinear()
+      .domain([0, d3.sum(data, d => d.value)])
+      .range([0, width]);
+
+    const tooltip = d3.select("#tooltip");
+
+    let cumulative = 0;
+
+    // Draw the bars
+    svg.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", d => {
+        const xPos = x(cumulative);
+        cumulative += d.value;
+        return xPos;
+      })
+      .attr("y", 0)
+      .attr("width", d => x(d.value))
+      .attr("height", barHeight)
+      .attr("fill", d => d.barColor)
+      .on("mouseover", function (d) {
+        const barWidth = x(d.value);
+        const barX = d3.select(this).attr("x");
+        const tooltipX = parseFloat(barX) + barWidth / 2;
+        const tooltipY = parseFloat(d3.select(".chart-container").style("margin-top")) - 30;
+
+        tooltip.style("display", "block")
+          .html(`${d.segment}: ${d.value}%`)
+          .style("left", `${tooltipX - tooltip.node().getBoundingClientRect().width/2}px`)
+          .style("top", `${tooltipY}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("display", "none");
+      });
+
+    // Add a border around the "Available" group
+    const availableGroupWidth = x(data[0].value + data[1].value);
+    svg.append("rect")
+      .attr("class", "group-border")
+      .attr("x", x(0)+1) 
+      .attr("y", 1)
+      .attr("width", availableGroupWidth-1)
+      .attr("height", barHeight-2);
+
+    // Add labels
+    cumulative = 0;
+    svg.selectAll(".label")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", d => {
+        const xPos = x(cumulative + d.value/2);
+        cumulative += d.value;
+        return xPos;
+      })
+      .attr("y", 25)
+      .attr("text-anchor", "middle")
+      .attr("fill", d => d.labelColor)
+      .text(d => `${d.value}%`);
+
+    // Create the SVG container for the legend
+    const legendContainer = d3.select("#barLegend")
+      .append("svg")
+      .attr("width", 350)
+      .attr("height", 100);
+
+    let legendX = 0;
+    let legendY = 0;
+    // Add legend items
+    data.forEach((d, i) => {
+      const group = legendContainer.append("g")
+        .attr("class", "legend-item")
+        .attr("transform", `translate(${legendX}, 0)`);
+
+      // Add the color square
+      group.append("rect")
+        .attr("class", "legend-square")
+        .attr("width", 16)
+        .attr("height", 16)
+        .attr("fill", d.barColor);
+
+      // Add the text label
+      const text = group.append("text")
+        .attr("x", 20) // Position to the right of the square
+        .attr("y", 12) // Center-align with the square
+        .text(d.segment)
+        .attr("fill", "#000");
+
+      const textWidth = text.node().getBBox().width;
+      legendX += 16 + 4 + textWidth + 20;
+      // legendX = (i==1) ? legendX + 150 : 0;
+      // legendY = (i==0) ? 22 : 0;
+    });
+  }
+
 
   function createOverview() {
     var totals = getGlobalTotals();
     var metricTotals = Object.entries(totals);
 
-    var chart = c3.generate({
-      size: {
-        height: 210
-      },
-      bindto: '.donut-chart',
-      data: {
-        columns: [
-            ['data1', totals['Available']],
-            ['data2', totals['Not Up-to-date']],
-            ['data3', totals['Empty']]
-        ],
-        type: 'donut',
-        names: metricNames,
-        colors: metricColors,
-        order: null
-      },
-      donut: {
-        width: 45,
-        label: {
-          format: function (value, ratio, id) {
-            return value+'%';
-          }
-        }
-      }
-    });
+    // var chart = c3.generate({
+    //   size: {
+    //     height: 210
+    //   },
+    //   bindto: '.donut-chart',
+    //   data: {
+    //     columns: [
+    //         ['data1', totals['Available']],
+    //         ['data2', totals['Not Up-to-date']],
+    //         ['data3', totals['Empty']]
+    //     ],
+    //     type: 'donut',
+    //     names: metricNames,
+    //     colors: metricColors,
+    //     order: null
+    //   },
+    //   donut: {
+    //     width: 45,
+    //     label: {
+    //       format: function (value, ratio, id) {
+    //         return value+'%';
+    //       }
+    //     }
+    //   }
+    // });
 
-    var firstLegend = d3.select(".c3-legend-item");
-    var legendContainer = d3.select(firstLegend.node().parentNode);
-    var legendX = parseInt(firstLegend.select('text').attr('x'));
-    var legendY = parseInt(firstLegend.select('text').attr('y'));
-    legendContainer
-      .attr('class', 'donut-legend-container')
-      .append('text')
-      .text('Global Data Grid Availability:')
-      .attr('class', 'donut-legend-title')
-      .attr('x', legendX - 10)
-      .attr('y', legendY - 20);
+    // var firstLegend = d3.select(".c3-legend-item");
+    // var legendContainer = d3.select(firstLegend.node().parentNode);
+    // var legendX = parseInt(firstLegend.select('text').attr('x'));
+    // var legendY = parseInt(firstLegend.select('text').attr('y'));
+    // legendContainer
+    //   .attr('class', 'donut-legend-container')
+    //   .append('text')
+    //   .text('Global Data Grid Availability:')
+    //   .attr('class', 'donut-legend-title')
+    //   .attr('x', legendX - 10)
+    //   .attr('y', legendY - 20);
+
+    createStackBarChart();
 
     //key figures
     metricTotals.forEach(function(metric, index) {
