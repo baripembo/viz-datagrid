@@ -145,6 +145,7 @@ ul.actions {
 .overview-container {
 	display: flex;
 	flex-flow: row;
+	position: relative;
 	.donut-chart {
 		margin-top: 30px;
 		width: 30%;
@@ -152,6 +153,50 @@ ul.actions {
 	.stats {
 		display: flex;
 		flex-wrap: wrap;
+	}
+	text {
+		pointer-events: none;
+	}
+	.chart-container,
+	.tooltip {
+			margin-top: auto;
+			margin-bottom: auto;
+			margin-right: 30px;
+	}
+  .bar {
+    cursor: pointer;
+  }
+  .group-border {
+    fill: none;
+    stroke: #007CE1;
+    stroke-width: 1;
+    // stroke-dasharray: 4 2;
+  }
+  .tooltip {
+    background-color: #FFF;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,.3);
+    display: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+    padding: 8px 12px;
+    position: absolute;
+    pointer-events: none;
+    text {
+    	pointer-events: none;
+    }
+  }
+  .tooltip::after {
+	  content: '';
+	  position: absolute;
+	  bottom: -12px;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  border-width: 6px;
+	  border-style: solid;
+	  border-color: #FFF transparent transparent transparent;
 	}
 }
 
