@@ -247,7 +247,7 @@ $( document ).ready(function() {
   function createCategories(categories) {
     rowCount++;
     var colspan = (isMobile) ? 'col-1' : 'col-2';
-    var icons = ['Affected-population', 'Drought', 'Coordination', 'Food-Security', 'Location', 'Health'];
+    var icons = ['Affected-population', 'Coordination', 'Food-Security', 'Location', 'Health', 'Drought'];
     $('.charts').append("<div class='" + colspan + " categories category-list" + rowCount + "'><ul class='small'></ul></div>");
 
     categories.forEach(function(category, index) {
