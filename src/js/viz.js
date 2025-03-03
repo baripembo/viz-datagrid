@@ -9,7 +9,7 @@ $( document ).ready(function() {
   var countryCount, categoryCount, globalCounts, date;
   var rowCount = 0;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
-  var metricNames = {data1: 'Available', data2: 'Not Up-to-date', data3: 'Unavailable'}
+  var metricNames = {data1: 'Available and Up-to-date', data2: 'Available and Not Up-to-date', data3: 'Unavailable'}
   var countryNames, datasetCounts = [];
 
   var tooltipActive = false;
@@ -269,45 +269,73 @@ $( document ).ready(function() {
     var totals = getGlobalTotals();
     var metricTotals = Object.entries(totals);
 
-    // var chart = c3.generate({
-    //   size: {
-    //     height: 210
-    //   },
-    //   bindto: '.donut-chart',
-    //   data: {
-    //     columns: [
-    //         ['data1', totals['Available']],
-    //         ['data2', totals['Not Up-to-date']],
-    //         ['data3', totals['Empty']]
-    //     ],
-    //     type: 'donut',
-    //     names: metricNames,
-    //     colors: metricColors,
-    //     order: null
-    //   },
-    //   donut: {
-    //     width: 45,
-    //     label: {
-    //       format: function (value, ratio, id) {
-    //         return value+'%';
-    //       }
-    //     }
-    //   }
-    // });
+    var chart = c3.generate({
+      size: {
+        height: 210
+      },
+      bindto: '.donut-chart',
+      data: {
+        columns: [
+            ['data1', totals['Available and Up-to-date']],
+            ['data2', totals['Available and Not Up-to-date']],
+            ['data3', totals['Unavailable']]
+        ],
+        type: 'donut',
+        names: metricNames,
+        colors: metricColors,
+        order: null
+      },
+      donut: {
+        width: 45,
+        label: {
+          format: function (value, ratio, id) {
+            return value+'%';
+          }
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
 
-    // var firstLegend = d3.select(".c3-legend-item");
-    // var legendContainer = d3.select(firstLegend.node().parentNode);
-    // var legendX = parseInt(firstLegend.select('text').attr('x'));
-    // var legendY = parseInt(firstLegend.select('text').attr('y'));
-    // legendContainer
-    //   .attr('class', 'donut-legend-container')
-    //   .append('text')
-    //   .text('Global Data Grid Availability:')
-    //   .attr('class', 'donut-legend-title')
-    //   .attr('x', legendX - 10)
-    //   .attr('y', legendY - 20);
 
-    createStackBarChart();
+    // Add legend
+    d3.select('.donut-chart').append('h3').html('Global Data Grid Availability:');
+    
+    // Create the legend container
+    var legend = d3.select('.donut-chart')
+      .append('div')
+      .attr('class', 'donut-legend');
+
+    // Bind the data to individual legend keys
+    var legendKeys = legend.selectAll('.legend-key')
+      .data(['data1', 'data2', 'data3'])
+      .enter()
+      .append('div')
+      .attr('class', 'legend-key')
+      .attr('data-id', function(d) { return d; });
+
+    // Append the color chip
+    legendKeys.append('span')
+      .attr('class', 'legend-chip')
+      .style('display', 'inline-block')
+      .style('width', '12px')
+      .style('height', '12px')
+      .style('background-color', function(d) { return chart.color(d); })
+      .style('margin-right', '5px');
+
+    // Append the text label
+    legendKeys.append('span')
+      .attr('class', 'legend-text')
+      .text(function(d) { return metricNames[d]; });
+
+    // Add mouseover and mouseout events for interactivity
+    legendKeys.on('mouseover', function(d) {
+        chart.focus(d);
+    })
+    .on('mouseout', function(d) {
+        chart.revert();
+    });
 
     //key figures
     metricTotals.forEach(function(metric, index) {
@@ -315,7 +343,6 @@ $( document ).ready(function() {
       var value = metric[1] + '<span>%</span>';
       createKeyFigure(title, value);
     });
-
 
     createKeyFigure('Number of Locations', countryCount);
     createKeyFigure('Number of Categories', globalCounts['Category Count']);
@@ -346,9 +373,9 @@ $( document ).ready(function() {
         }
     }
 
-    totals['Available'] = complete;
-    totals['Not Up-to-date'] = incomplete;
-    totals['Empty'] = noData;
+    totals['Available and Up-to-date'] = complete;
+    totals['Available and Not Up-to-date'] = incomplete;
+    totals['Unavailable'] = noData;
 
     return totals;
   }

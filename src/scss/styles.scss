@@ -205,6 +205,9 @@ ul.actions {
 	width: 33%;
 	.inner {
 		border-bottom: 1px solid #CCC;
+		h3 {
+			min-height: 42px;
+		}
 	}
 }
 
@@ -375,24 +378,24 @@ ul.actions {
 
 .c3-legend-item {
 	text {
-		font-size: 11px;
+		font-size: 12px;
 	}
 }
 
-.donut-chart svg {
-	overflow: visible !important;
+.donut-chart {
+	svg {
+		overflow: visible !important;
+	}
+	h3 {
+		margin-left: 50px;
+	}
+	.donut-legend {
+		margin-left: 60px;
+	}
+	.legend-key {
+		padding-bottom: 4px;
+	}
 }
-
-.donut-legend-container {
-	transform: translate(0, 220px);
-}
-
-.donut-legend-title {
-	font-family: 'Gotham-Bold', sans-serif;
-	font-size: 14px;
-	transform: translate(-15px, 0);
-}
-
 
 #subcategory-view {
 	border: 0;
