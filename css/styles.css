@@ -1669,6 +1669,9 @@ ul.actions li.social a i {
 .key-figure .inner {
   border-bottom: 1px solid #CCC;
 }
+.key-figure .inner h3 {
+  min-height: 42px;
+}
 
 .legend {
   display: flex;
@@ -1829,21 +1832,25 @@ ul.actions li.social a i {
 }
 
 .c3-legend-item text {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .donut-chart svg {
   overflow: visible !important;
 }
-
-.donut-legend-container {
-  transform: translate(0, 220px);
+.donut-chart h3 {
+  margin-left: 50px;
 }
-
-.donut-legend-title {
-  font-family: "Gotham-Bold", sans-serif;
-  font-size: 14px;
-  transform: translate(-15px, 0);
+.donut-chart .donut-legend {
+  margin-left: 60px;
+}
+.donut-chart .legend-key {
+  align-items: center;
+  display: flex;
+  padding-bottom: 4px;
+}
+.donut-chart .legend-text {
+  font-size: 13px;
 }
 
 #subcategory-view {
