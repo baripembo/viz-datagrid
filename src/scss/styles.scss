@@ -393,7 +393,12 @@ ul.actions {
 		margin-left: 60px;
 	}
 	.legend-key {
+    align-items: center;
+		display: flex;
 		padding-bottom: 4px;
+	}
+	.legend-text {
+		font-size: 13px;
 	}
 }
 
