@@ -45,7 +45,8 @@ $( document ).ready(function() {
       deepLinkView();
 
       //load the subcategory view
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>');
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://baripembo.github.io/viz-datagrid-subcategories"></iframe>');
+      //https://ocha-dap.github.io/viz-datagrid-subcategories
     });
   }
 
