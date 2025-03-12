@@ -50,6 +50,28 @@ $( document ).ready(function() {
     });
   }
 
+  function createIntro() {
+    let strLength = 345;
+    let text = 'The Data Grid shows the most important crisis data across six categories and several sub-categories. Data may be included in the Data Grid if it is relevant to the sub-category, sub-national, has broad geographic coverage, and is shared in a commonly used format. If a dataset on HDX meets these criteria, data for the sub-category is considered ‘available’. We then assess its timeliness. We make a distinction between whether the data is up-to-date or not up-to-date, according to the update frequency set by the contributing organization. Data is considered ‘unavailable’ if it does not meet the above criteria or it has not been shared on HDX.';
+    let intro = $('<p>'+ truncateString(text, strLength) +' <a href="#" class="expand">Show more</a></p>');
+    $('#intro').append(intro)
+    intro.click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(text, strLength) + ' <a href="#" class="expand">Show more</a>');
+      }
+      else {
+        $(this).html(text + ' <a href="#" class="collapse">Show less</a>');
+      }
+    });
+  }
+
+  function truncateString(str, num) {
+    if (str.length <= num) {
+      return str;
+    }
+    return str.slice(0, num) + '...';
+  }
+
   function parseData(data) {
     var format = d3.timeFormat("%b %d, %Y");
     var d = (data[0]['Date']).split('-');
@@ -400,5 +422,6 @@ $( document ).ready(function() {
   }
 
   getData();
+  createIntro();
   //initTracking();
 });
