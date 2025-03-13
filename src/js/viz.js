@@ -9,7 +9,7 @@ $( document ).ready(function() {
   var countryCount, categoryCount, globalCounts, date;
   var rowCount = 0;
   var metricColors = {data1: '#007CE1', data2: '#C0D7EB', data3: '#E6E7E8'};
-  var metricNames = {data1: 'Available', data2: 'Not Up-to-date', data3: 'Unavailable'}
+  var metricNames = {data1: 'Available and Up-to-date', data2: 'Available and Not Up-to-date', data3: 'Unavailable'}
   var countryNames, datasetCounts = [];
 
   var tooltipActive = false;
@@ -45,8 +45,31 @@ $( document ).ready(function() {
       deepLinkView();
 
       //load the subcategory view
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>');
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://baripembo.github.io/viz-datagrid-subcategories"></iframe>');
+      //https://ocha-dap.github.io/viz-datagrid-subcategories
     });
+  }
+
+  function createIntro() {
+    let strLength = 345;
+    let text = 'The Data Grid shows the most important crisis data across six categories and several sub-categories. Data may be included in the Data Grid if it is relevant to the sub-category, sub-national, has broad geographic coverage, and is shared in a commonly used format. If a dataset on HDX meets these criteria, data for the sub-category is considered ‘available’. We then assess its timeliness. We make a distinction between whether the data is up-to-date or not up-to-date, according to the update frequency set by the contributing organization. Data is considered ‘unavailable’ if it does not meet the above criteria or it has not been shared on HDX.';
+    let intro = $('<p>'+ truncateString(text, strLength) +' <a href="#" class="expand">Show more</a></p>');
+    $('#intro').append(intro)
+    intro.click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(text, strLength) + ' <a href="#" class="expand">Show more</a>');
+      }
+      else {
+        $(this).html(text + ' <a href="#" class="collapse">Show less</a>');
+      }
+    });
+  }
+
+  function truncateString(str, num) {
+    if (str.length <= num) {
+      return str;
+    }
+    return str.slice(0, num) + '...';
   }
 
   function parseData(data) {
@@ -149,165 +172,78 @@ $( document ).ready(function() {
     $(target).addClass('show');
   }
 
-  function createStackBarChart() {
-    var totals = getGlobalTotals();
-    const data = [
-      { segment: "Available", value: totals['Available'], parent: "Available", barColor: "#007CE1", labelColor:"#FFF" },
-      { segment: "Not up-to-date", value: totals['Not Up-to-date'], parent: "Available", barColor: "#C0D7EB", labelColor: "#2d78bd"  },
-      { segment: "Unavailable", value: totals['Empty'], parent: "Unavailable", barColor: "#E6E7E8", labelColor: "#F26B7E"  }
-    ];
-
-    const width = 350;
-    const height = 50;
-    const barHeight = 40;
-
-    const svg = d3.select("#chart")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-    const x = d3.scaleLinear()
-      .domain([0, d3.sum(data, d => d.value)])
-      .range([0, width]);
-
-    const tooltip = d3.select("#tooltip");
-
-    let cumulative = 0;
-
-    // Draw the bars
-    svg.selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", d => {
-        const xPos = x(cumulative);
-        cumulative += d.value;
-        return xPos;
-      })
-      .attr("y", 0)
-      .attr("width", d => x(d.value))
-      .attr("height", barHeight)
-      .attr("fill", d => d.barColor)
-      .on("mouseover", function (d) {
-        const barWidth = x(d.value);
-        const barX = d3.select(this).attr("x");
-        const tooltipX = parseFloat(barX) + barWidth / 2;
-        const tooltipY = parseFloat(d3.select(".chart-container").style("margin-top")) - 30;
-
-        tooltip.style("display", "block")
-          .html(`${d.segment}: ${d.value}%`)
-          .style("left", `${tooltipX - tooltip.node().getBoundingClientRect().width/2}px`)
-          .style("top", `${tooltipY}px`);
-      })
-      .on("mouseout", function () {
-        tooltip.style("display", "none");
-      });
-
-    // Add a border around the "Available" group
-    const availableGroupWidth = x(data[0].value + data[1].value);
-    svg.append("rect")
-      .attr("class", "group-border")
-      .attr("x", x(0)+1) 
-      .attr("y", 1)
-      .attr("width", availableGroupWidth-1)
-      .attr("height", barHeight-2);
-
-    // Add labels
-    cumulative = 0;
-    svg.selectAll(".label")
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("x", d => {
-        const xPos = x(cumulative + d.value/2);
-        cumulative += d.value;
-        return xPos;
-      })
-      .attr("y", 25)
-      .attr("text-anchor", "middle")
-      .attr("fill", d => d.labelColor)
-      .text(d => `${d.value}%`);
-
-    // Create the SVG container for the legend
-    const legendContainer = d3.select("#barLegend")
-      .append("svg")
-      .attr("width", 350)
-      .attr("height", 100);
-
-    let legendX = 0;
-    let legendY = 0;
-    // Add legend items
-    data.forEach((d, i) => {
-      const group = legendContainer.append("g")
-        .attr("class", "legend-item")
-        .attr("transform", `translate(${legendX}, 0)`);
-
-      // Add the color square
-      group.append("rect")
-        .attr("class", "legend-square")
-        .attr("width", 16)
-        .attr("height", 16)
-        .attr("fill", d.barColor);
-
-      // Add the text label
-      const text = group.append("text")
-        .attr("x", 20) // Position to the right of the square
-        .attr("y", 12) // Center-align with the square
-        .text(d.segment)
-        .attr("fill", "#000");
-
-      const textWidth = text.node().getBBox().width;
-      legendX += 16 + 4 + textWidth + 20;
-      // legendX = (i==1) ? legendX + 150 : 0;
-      // legendY = (i==0) ? 22 : 0;
-    });
-  }
-
 
   function createOverview() {
     var totals = getGlobalTotals();
     var metricTotals = Object.entries(totals);
 
-    // var chart = c3.generate({
-    //   size: {
-    //     height: 210
-    //   },
-    //   bindto: '.donut-chart',
-    //   data: {
-    //     columns: [
-    //         ['data1', totals['Available']],
-    //         ['data2', totals['Not Up-to-date']],
-    //         ['data3', totals['Empty']]
-    //     ],
-    //     type: 'donut',
-    //     names: metricNames,
-    //     colors: metricColors,
-    //     order: null
-    //   },
-    //   donut: {
-    //     width: 45,
-    //     label: {
-    //       format: function (value, ratio, id) {
-    //         return value+'%';
-    //       }
-    //     }
-    //   }
-    // });
+    var chart = c3.generate({
+      size: {
+        height: 210
+      },
+      bindto: '.donut-chart',
+      data: {
+        columns: [
+            ['data1', totals['Available and Up-to-date']],
+            ['data2', totals['Available and Not Up-to-date']],
+            ['data3', totals['Unavailable']]
+        ],
+        type: 'donut',
+        names: metricNames,
+        colors: metricColors,
+        order: null
+      },
+      donut: {
+        width: 45,
+        label: {
+          format: function (value, ratio, id) {
+            return value+'%';
+          }
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
 
-    // var firstLegend = d3.select(".c3-legend-item");
-    // var legendContainer = d3.select(firstLegend.node().parentNode);
-    // var legendX = parseInt(firstLegend.select('text').attr('x'));
-    // var legendY = parseInt(firstLegend.select('text').attr('y'));
-    // legendContainer
-    //   .attr('class', 'donut-legend-container')
-    //   .append('text')
-    //   .text('Global Data Grid Availability:')
-    //   .attr('class', 'donut-legend-title')
-    //   .attr('x', legendX - 10)
-    //   .attr('y', legendY - 20);
 
-    createStackBarChart();
+    // Add legend
+    d3.select('.donut-chart').append('h3').html('Global Data Grid Availability:');
+    
+    // Create the legend container
+    var legend = d3.select('.donut-chart')
+      .append('div')
+      .attr('class', 'donut-legend');
+
+    // Bind the data to individual legend keys
+    var legendKeys = legend.selectAll('.legend-key')
+      .data(['data1', 'data2', 'data3'])
+      .enter()
+      .append('div')
+      .attr('class', 'legend-key')
+      .attr('data-id', function(d) { return d; });
+
+    // Append the color chip
+    legendKeys.append('span')
+      .attr('class', 'legend-chip')
+      .style('display', 'inline-block')
+      .style('width', '12px')
+      .style('height', '12px')
+      .style('background-color', function(d) { return chart.color(d); })
+      .style('margin-right', '5px');
+
+    // Append the text label
+    legendKeys.append('span')
+      .attr('class', 'legend-text')
+      .text(function(d) { return metricNames[d]; });
+
+    // Add mouseover and mouseout events for interactivity
+    legendKeys.on('mouseover', function(d) {
+        chart.focus(d);
+    })
+    .on('mouseout', function(d) {
+        chart.revert();
+    });
 
     //key figures
     metricTotals.forEach(function(metric, index) {
@@ -315,7 +251,6 @@ $( document ).ready(function() {
       var value = metric[1] + '<span>%</span>';
       createKeyFigure(title, value);
     });
-
 
     createKeyFigure('Number of Locations', countryCount);
     createKeyFigure('Number of Categories', globalCounts['Category Count']);
@@ -327,9 +262,9 @@ $( document ).ready(function() {
     let totals = new Object();
 
     // Convert percentages to whole numbers
-    let complete = Math.round(globalCounts['Total Percentage Data Complete'] * 100);
-    let incomplete = Math.round(globalCounts['Total Percentage Data Incomplete'] * 100);
-    let noData = Math.round(globalCounts['Total Percentage No Data'] * 100);
+    let complete = Math.round(globalCounts['Rounded Total Percentage Data Complete'] * 100);
+    let incomplete = Math.round(globalCounts['Rounded Total Percentage Data Incomplete'] * 100);
+    let noData = Math.round(globalCounts['Rounded Total Percentage No Data'] * 100);
 
     // Ensure the sum of the percentages equals 100
     let totalSum = complete + incomplete + noData;
@@ -346,9 +281,9 @@ $( document ).ready(function() {
         }
     }
 
-    totals['Available'] = complete;
-    totals['Not Up-to-date'] = incomplete;
-    totals['Empty'] = noData;
+    totals['Available and Up-to-date'] = complete;
+    totals['Available and Not Up-to-date'] = incomplete;
+    totals['Unavailable'] = noData;
 
     return totals;
   }
@@ -362,7 +297,7 @@ $( document ).ready(function() {
   function createCategories(categories) {
     rowCount++;
     var colspan = (isMobile) ? 'col-1' : 'col-2';
-    var icons = ['Affected-population', 'Drought', 'Coordination', 'Food-Security', 'Location', 'Health'];
+    var icons = ['Affected-population', 'Coordination', 'Food-Security', 'Location', 'Health', 'Drought'];
     $('.charts').append("<div class='" + colspan + " categories category-list" + rowCount + "'><ul class='small'></ul></div>");
 
     categories.forEach(function(category, index) {
@@ -487,5 +422,6 @@ $( document ).ready(function() {
   }
 
   getData();
+  createIntro();
   //initTracking();
 });
