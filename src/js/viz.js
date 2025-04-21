@@ -45,13 +45,12 @@ $( document ).ready(function() {
       deepLinkView();
 
       //load the subcategory view
-      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://baripembo.github.io/viz-datagrid-subcategories"></iframe>');
-      //https://ocha-dap.github.io/viz-datagrid-subcategories
+      $('.subcategory-container div a').html('<iframe id="subcategory-view" src="https://ocha-dap.github.io/viz-datagrid-subcategories"></iframe>');
     });
   }
 
   function createIntro() {
-    let strLength = 345;
+    let strLength = 334;
     let text = 'The Data Grid shows the most important crisis data across six categories and several sub-categories. Data may be included in the Data Grid if it is relevant to the sub-category, sub-national, has broad geographic coverage, and is shared in a commonly used format. If a dataset on HDX meets these criteria, data for the sub-category is considered ‘available’. We then assess its timeliness. We make a distinction between whether the data is up-to-date or not up-to-date, according to the update frequency set by the contributing organization. Data is considered ‘unavailable’ if it does not meet the above criteria or it has not been shared on HDX.';
     let intro = $('<p>'+ truncateString(text, strLength) +' <a href="#" class="expand">Show more</a></p>');
     $('#intro').append(intro)
